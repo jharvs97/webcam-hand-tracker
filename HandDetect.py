@@ -4,15 +4,24 @@ from rect import Rect
 from skin_detect import DetectSkin
 from hand import Hand
 
+title_window = "Mask"
+trackbar_name1 = "Offset low"
+trackbar_name2 = "Offset high"
+
+def nothing(x):
+    pass
+
+
 class HandDetect:
 
     def __init__(self, side=0):
         self.detectSkin = DetectSkin()
         self.findHand = Hand()
         self.side = side
-        self.backSub = cv.createBackgroundSubtractorMOG2()
+        self.calibrated = False
 
     def hand_center_XY(self, frame):
+
 
         height = frame.shape[0]
         width = frame.shape[1]
@@ -25,27 +34,29 @@ class HandDetect:
             frame_roi = frame_copy[0:int(height), int(0):int(width/2)]
         
         
-        fg_mask = self.backSub.apply(frame_roi)
-        fg = cv.bitwise_and(frame_roi, frame_roi, mask=fg_mask)
-        
+        self.detectSkin.display_sampler(frame_roi)
+        mask = self.detectSkin.get_mask(frame_roi)
+        hand_center = self.findHand.get_hand_pos(mask, frame_roi, self.detectSkin.calibrated)
 
+        cv.namedWindow(title_window)
+        cv.createTrackbar(trackbar_name1, title_window, 0, 80, nothing)
+        cv.createTrackbar(trackbar_name2, title_window, 0, 80, nothing)
 
-        self.detectSkin.display_sampler(frame)
-        mask = self.detectSkin.get_mask(fg)
-        hand_center = self.findHand.get_hand_pos(mask, fg, self.detectSkin.calibrated)
+        self.detectSkin.offset_low = cv.getTrackbarPos(trackbar_name1, title_window)
+        self.detectSkin.offset_high = cv.getTrackbarPos(trackbar_name2, title_window)
 
-        cv.imshow('frame', frame)
+        #cv.imshow('frame', frame)
         cv.imshow('roi', frame_roi)
-        cv.imshow('mask', mask)
-        cv.imshow('fg', fg)
+        cv.imshow(title_window, mask)
+        #cv.imshow(title_window, )
 
-        #cv.imshow('fg', fg)
+        #print(hand_center)
 
         return hand_center
 
     def calibrateSkinDetection(self, frame):
         self.detectSkin.calibrate(frame)
+        self.calibrated = True
 
-        
         
     

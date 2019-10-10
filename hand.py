@@ -34,8 +34,8 @@ class Hand:
             return np.zeros(dest.shape)
         
         
-        # c = max(contours[index], key = cv2.contourArea)
-        # print(c)
+        c = max(contours[index], key = cv2.contourArea)
+        top_hand = tuple(c[0][:])
         #extTop = tuple(c[c[:, :, 1].argmin()][0])
 
         hull_pts = cv2.convexHull(contours[index], returnPoints=True)
@@ -46,11 +46,12 @@ class Hand:
         cY = int(M["m01"] / M["m00"])
         boundRect = cv2.boundingRect(hull_pts)
         cv2.circle(dest, (cX, cY), 7, (0, 0, 255), -1)
+        cv2.circle(dest, top_hand, 7, (255,0,0), -1)
 
         cv2.drawContours(dest, [hull_pts], -1, (0,255,0))
         # cv2.rectangle(dest, (int(third_hand_w), int(boundRect[1])), \
         #   (int(third_hand_w+self.handSize), int(boundRect[1]+self.handSize)), (0,0,255), 2)
         
         
-        return (cX, cY)
+        return top_hand
         # print(len(hull_pts))
