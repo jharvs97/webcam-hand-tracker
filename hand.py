@@ -1,17 +1,31 @@
+"""
+File:           hand.py
+Author:         Joshua H
+Date:           11/10/19
+Purpose:        This module is responsible for calculating the X and Y coordinates of the largest Y point of the contour that 
+                bounds the hand mask. The rationale for using the largest Y point versus using the center of the hand was the 
+                issue with skin detection picking up the arm as apart of the hand (since your arm is usually the same skin 
+                colour as your hand), this led to the center calculation not being accurate if the hand is  also in the frame.
+Assumptions:    It is assumed that the inputted hand mask is correct, and that the hand takes up most of the region of interest.
+"""
 import numpy as np
 import cv2
 from rect import Rect
 class Hand:
 
     def __init__(self):
-       # self.roi = Rect(x,y,w,h)
        self.calibrated = False
-       self.handSize = 60
 
-    def display_hand_area(self, frame):
-        
-        cv2.rectangle(frame, self.roi.minXY, self.roi.maxXY, (0,255,0), 2)
-
+    """
+    Method:     get_hand_pos
+    Purpose:    Returns the X,Y position of the top point of the contour
+    Params:     self: context object
+                img: input image
+                dest: destination image (for drawing)
+                calibrated: ensuring skin detection is calibrated
+    
+    Return:     Tuple     
+    """
     def get_hand_pos(self, img, dest, calibrated=False):
         
         if calibrated is False:
