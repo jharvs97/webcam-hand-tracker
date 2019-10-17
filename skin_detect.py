@@ -54,7 +54,7 @@ class DetectSkin:
         #print(frame.shape)
         frame_h = frame.shape[0]
         frame_w = frame.shape[1]
-        rect_size = 5
+        rect_size = 10
 
         self.rect1 = Rect(frame_w/2, frame_h/2, rect_size, rect_size)
         self.rect2 = Rect(frame_w/2, frame_h/3, rect_size, rect_size)
@@ -96,13 +96,12 @@ class DetectSkin:
         mask = cv2.inRange(hsv_frame, self.low_thresh, self.high_thresh)
 
         structElem = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
-        cv2.morphologyEx(mask, cv2.MORPH_OPEN, structElem )
-        cv2.morphologyEx(mask, cv2.MORPH_CLOSE, structElem )
-        # mask = cv2.erode(mask, structElem, iterations = 3)
-        # mask = cv2.dilate(mask, structElem, iterations = 3)
-
-        # mask = cv2.dilate(mask, structElem, iterations = 3)
-        # mask = cv2.erode(mask, structElem, iterations = 3)
+        #cv2.morphologyEx(mask, cv2.MORPH_OPEN, structElem )
+        #cv2.morphologyEx(mask, cv2.MORPH_CLOSE, structElem )
+        mask = cv2.erode(mask, structElem, iterations = 2)
+        mask = cv2.dilate(mask, structElem, iterations = 2)
+        mask = cv2.dilate(mask, structElem, iterations = 2)
+        mask = cv2.erode(mask, structElem, iterations = 2)
 
         mask = cv2.GaussianBlur(mask, (3,3), 0)
 

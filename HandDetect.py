@@ -18,6 +18,7 @@ class HandDetect:
         self.findHand = Hand()
         self.side = side
         self.calibrated = False
+        self.prev_hand_center = (0,0)
 
     """
     Method:     hand_center_XY
@@ -52,6 +53,10 @@ class HandDetect:
         cv.imshow('ROI Sampler', roi_copy)
         cv.imshow('Hand position', frame_roi)
         cv.imshow('Mask', mask)
+
+        #return hand_center
+        # if hand_center is None:
+        #     return self.p
 
         return hand_center
 

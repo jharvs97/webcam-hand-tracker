@@ -16,6 +16,7 @@ import cv2 as cv
 import numpy as np
 import time
 import sys
+import time
 
 # Keep track of the score
 # 0th index is the left paddle
@@ -73,7 +74,10 @@ while(1):
     calibrate_frame = frame.copy()
 
     # Call my hand detection API to get the hand position
+    # start = time.time()
     hand_pos = handDetect.hand_center_XY(calibrate_frame)
+    # end = time.time()
+    # print("Time elapsed for hand detection = %f" % (end - start))
 
     # If the user has started the game
     if game_start:
@@ -101,10 +105,14 @@ while(1):
         
         # If the hand detection is calibrated
         if handDetect.calibrated is True:
-            if hand_pos[1]:
-                if hand_pos[1] >= 0 and hand_pos[1] <= SCREEN_WIDTH:
-                    #print("Center Y: %d" % hand_pos[1])
-                    human_paddle.set_ypos(hand_pos[1])
+            # use a try-block incase there are no bounding-boxes in the frame
+            try:
+                if hand_pos[1]:
+                    if hand_pos[1] >= 0 and hand_pos[1] <= SCREEN_WIDTH:
+                        #print("Center Y: %d" % hand_pos[1])
+                        human_paddle.set_ypos(hand_pos[1])
+            except:
+                print("Error, no hand in the frame!")
 
         # Update each game object
         ai_paddle.update(ball)
